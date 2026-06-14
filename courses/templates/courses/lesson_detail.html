@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ lesson.title }} | Uleeyy</title>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Шрифты -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CodeMirror для редактора -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F3F4F6;
+            color: #1F2937;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* ========== ХЕДЕР ========== */
+        .header {
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-bottom: 1px solid #E5E7EB;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #082567;
+        }
+        
+        .logo-bee {
+            background: #F59E0B;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+        
+        .logo span {
+            color: #F59E0B;
+        }
+        
+        .course-title {
+            color: #6B7280;
+            font-size: 0.85rem;
+            margin-left: 12px;
+        }
+        
+        .back-link {
+            color: #6B7280;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover {
+            color: #F59E0B;
+        }
+        
+        /* ========== ОСНОВНОЙ КОНТЕЙНЕР ========== */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 57px);
+        }
+        
+        /* ========== ЛЕВАЯ ПАНЕЛЬ (ТЕОРИЯ) ========== */
+        .left-panel {
+            width: 50%;
+            overflow-y: auto;
+            background: #FFFFFF;
+            border-right: 1px solid #E5E7EB;
+            padding: 32px 28px;
+        }
+        
+        .left-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        .left-panel::-webkit-scrollbar-track {
+            background: #F3F4F6;
+        }
+        .left-panel::-webkit-scrollbar-thumb {
+            background: #F59E0B;
+            border-radius: 3px;
+        }
+        
+        /* Навигация по урокам */
+        .lesson-nav {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            background: #F3F4F6;
+            color: #4B5563;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .nav-btn:hover {
+            background: #2563EB;
+            color: white;
+        }
+        
+        .module-badge {
+            background: #F3F4F6;
+            color: #082567;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-left: auto;
+        }
+        
+        /* Контент урока */
+        .theory-content {
+            margin-bottom: 48px;
+        }
+        
+        .theory-content h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #082567;
+            margin-bottom: 24px;
+        }
+        
+        .theory-content h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #082567;
+            margin: 24px 0 16px 0;
+        }
+        
+        .theory-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1F2937;
+            margin: 20px 0 12px 0;
+        }
+        
+        .theory-content p {
+            line-height: 1.6;
+            color: #1F2937;
+            margin-bottom: 16px;
+        }
+        
+        .theory-content ul, .theory-content ol {
+            margin: 16px 0 16px 24px;
+            color: #1F2937;
+            line-height: 1.6;
+        }
+        
+        .theory-content li {
+            margin: 8px 0;
+        }
+        
+        .theory-content code {
+            background: #F3F4F6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #F59E0B;
+        }
+        
+        .theory-content pre {
+            background: #F9FAFB;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid #E5E7EB;
+        }
+        
+        .theory-content pre code {
+            background: none;
+            color: #1F2937;
+            padding: 0;
+        }
+        
+        .theory-content strong {
+            color: #082567;
+        }
+        
+        /* Список заданий */
+        .tasks-list {
+            margin-top: 32px;
+            border-top: 1px solid #E5E7EB;
+            padding-top: 32px;
+        }
+        
+        .tasks-list h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #082567;
+            margin-bottom: 16px;
+        }
+        
+        .task-item {
+            background: #F9FAFB;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .task-item:hover {
+            border-color: #F59E0B;
+            transform: translateX(4px);
+        }
+        
+        .task-item.active {
+            border-color: #082567;
+            background: #F3F4F6;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            color: #082567;
+            font-size: 16px;
+        }
+        
+        .task-points {
+            background: #F59E0B;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .task-desc {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.5;
+        }
+        
+        /* ========== ПРАВАЯ ПАНЕЛЬ (РЕДАКТОР) ========== */
+        .right-panel {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            background: #FFFFFF;
+            border-left: 1px solid #E5E7EB;
+        }
+        
+        .editor-header {
+            background: #2563EB;
+            padding: 12px 20px;
+            border-bottom: 1px solid #1D4ED8;
+        }
+        
+        .editor-header span {
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+        }
+        
+        .editor-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        .CodeMirror {
+            height: 100%;
+            font-size: 14px;
+            background: #FFFFFF;
+            color: #1F2937;
+            border: none;
+        }
+        
+        .CodeMirror-gutters {
+            background: #F9FAFB;
+            border-right: 1px solid #E5E7EB;
+        }
+        
+        .CodeMirror-linenumber {
+            color: #9CA3AF;
+        }
+        
+        .CodeMirror-cursor {
+            border-left-color: #2563EB;
+        }
+        
+        .output-container {
+            background: #F9FAFB;
+            border-top: 1px solid #E5E7EB;
+            padding: 16px 20px;
+            min-height: 150px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .output-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #2563EB;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .output-content {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #1F2937;
+            white-space: pre-wrap;
+        }
+        
+        .output-content.success {
+            color: #22C55E;
+        }
+        
+        .output-content.error {
+            color: #EF4444;
+        }
+        
+        .button-bar {
+            display: flex;
+            gap: 12px;
+            padding: 16px 20px;
+            background: #FFFFFF;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .btn-run {
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        
+        .btn-run:hover {
+            background: #1D4ED8;
+            transform: translateY(-1px);
+        }
+        
+        .btn-check {
+            background: #F3F4F6;
+            color: #1F2937;
+            border: 1px solid #E5E7EB;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        
+        .btn-check:hover {
+            border-color: #F59E0B;
+            color: #F59E0B;
+        }
+        
+        .reset-btn {
+            background: none;
+            border: 1px solid #E5E7EB;
+            color: #6B7280;
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: auto;
+            transition: all 0.2s;
+            border-radius: 8px;
+            padding: 0 16px;
+        }
+        
+        .reset-btn:hover {
+            border-color: #F59E0B;
+            color: #F59E0B;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .left-panel, .right-panel {
+                width: 100%;
+                height: 50%;
+            }
+            .left-panel {
+                overflow-y: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Хедер с пчёлкой -->
+    <header class="header">
+        <div style="display: flex; align-items: center;">
+            <a href="/" class="logo">
+                <div class="logo-bee">🐝</div>
+                Uleeyy</>
+            </a>
+            <span class="course-title">{{ lesson.module.course.title }}</span>
+        </div>
+        <a href="{% url 'course_detail' lesson.module.course.id %}" class="back-link">← Выйти из урока</a>
+    </header>
+    
+    <div class="main-container">
+        <!-- ЛЕВАЯ ПАНЕЛЬ: теория + задания -->
+        <div class="left-panel">
+            <div class="lesson-nav">
+                {% if previous_lesson %}
+                <a href="{% url 'lesson_detail' previous_lesson.id %}" class="nav-btn">← Предыдущий урок</a>
+                {% endif %}
+                {% if next_lesson %}
+                <a href="{% url 'lesson_detail' next_lesson.id %}" class="nav-btn">Следующий урок →</a>
+                {% endif %}
+                <div class="module-badge">{{ lesson.module.title }}</div>
+            </div>
+            
+            <div class="theory-content">
+                <h1>{{ lesson.title }}</h1>
+                {{ lesson.content|safe }}
+            </div>
+            
+            {% if tasks %}
+            <div class="tasks-list">
+                <h3>📝 Задания</h3>
+                {% for task in tasks %}
+                <div class="task-item" data-task-id="{{ task.id }}" data-task-starter="{{ task.starter_code|default:'# Напишите ваш код здесь' }}" data-task-test="{{ task.test_code }}">
+                    <div class="task-header">
+                        <span class="task-title">{{ forloop.counter }}. {{ task.title }}</span>
+                        <span class="task-points">{{ task.points }} баллов</span>
+                    </div>
+                    <div class="task-desc">{{ task.description|truncatewords:30|linebreaks }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if has_test %}
+            <div style="margin-top: 32px;">
+                <a href="{% url 'test_detail' lesson.id %}" style="display: inline-block; background: #2563EB; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600;">📝 Пройти тест</a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- ПРАВАЯ ПАНЕЛЬ: редактор кода -->
+        <div class="right-panel">
+            <div class="editor-header">
+                <span>🐍 Редактор кода</span>
+            </div>
+            
+            <div class="editor-container">
+                <textarea id="code-editor"># Выберите задание слева, чтобы начать</textarea>
+            </div>
+            
+            <div class="output-container">
+                <div class="output-label">Вывод</div>
+                <div id="output-content" class="output-content">▶️ Результат выполнения появится здесь</div>
+            </div>
+            <div class="button-bar" style="margin-top: 20px; justify-content: center;">
+                <form method="post" action="{% url 'complete_lesson' lesson.id %}" style="display: inline;">
+                {% csrf_token %}
+                    <button type="submit" class="btn-run" style="background: #22C55E;">✓ Завершить урок</button>
+                </form>
+            </div>
+            
+            <div class="button-bar">
+                <button class="btn-run" id="run-code-btn">▶ Запустить код</button>
+                <button class="btn-check" id="check-task-btn">✓ Проверить задание</button>
+                <button class="reset-btn" id="reset-code-btn" title="Сбросить код">↺</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let editor = null;
+        let currentTaskId = null;
+        let tasksData = {};
+        
+        document.querySelectorAll('.task-item').forEach(item => {
+            const taskId = item.dataset.taskId;
+            tasksData[taskId] = {
+                starterCode: item.dataset.taskStarter,
+                testCode: item.dataset.taskTest
+            };
+        });
+        
+        const textarea = document.getElementById('code-editor');
+        editor = CodeMirror.fromTextArea(textarea, {
+            lineNumbers: true,
+            mode: 'python',
+            theme: 'default',
+            indentUnit: 4,
+            lineWrapping: true,
+            tabSize: 4
+        });
+        
+        document.querySelectorAll('.task-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.task-item').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentTaskId = this.dataset.taskId;
+                editor.setValue(tasksData[currentTaskId].starterCode);
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        function showOutput(output, isError = false) {
+            const outputDiv = document.getElementById('output-content');
+            outputDiv.textContent = output;
+            if (isError) {
+                outputDiv.classList.add('error');
+                outputDiv.classList.remove('success');
+            } else {
+                outputDiv.classList.add('success');
+                outputDiv.classList.remove('error');
+            }
+        }
+        
+        document.getElementById('run-code-btn').addEventListener('click', async function() {
+            const code = editor.getValue();
+            if (!code.trim()) {
+                showOutput('⚠️ Введите код для выполнения', true);
+                return;
+            }
+            showOutput('⏳ Выполнение...');
+            try {
+                const response = await fetch('{% url "run_code" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: `code=${encodeURIComponent(code)}`
+                });
+                const data = await response.json();
+                const isError = data.output.includes('❌') || data.output.includes('Error') || data.output.includes('Traceback');
+                showOutput(data.output, isError);
+            } catch (error) {
+                showOutput(`Ошибка: ${error.message}`, true);
+            }
+        });
+        
+        document.getElementById('check-task-btn').addEventListener('click', async function() {
+            if (!currentTaskId) {
+                showOutput('⚠️ Сначала выберите задание слева', true);
+                return;
+            }
+            const code = editor.getValue();
+            if (!code.trim()) {
+                showOutput('⚠️ Напишите код перед проверкой', true);
+                return;
+            }
+            showOutput('⏳ Проверка задания...');
+            try {
+                const response = await fetch(`/check-task/${currentTaskId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: `code=${encodeURIComponent(code)}`
+                });
+                const data = await response.json();
+                const passed = data.output && data.output.includes('✅');
+                showOutput(data.output, !passed);
+            } catch (error) {
+                showOutput(`Ошибка проверки: ${error.message}`, true);
+            }
+        });
+        
+        document.getElementById('reset-code-btn').addEventListener('click', function() {
+            if (currentTaskId && tasksData[currentTaskId]) {
+                editor.setValue(tasksData[currentTaskId].starterCode);
+                showOutput('↺ Код сброшен к начальному состоянию');
+            } else if (currentTaskId) {
+                editor.setValue('# Напишите ваш код здесь');
+            } else {
+                showOutput('⚠️ Сначала выберите задание слева', true);
+            }
+        });
+        
+        const firstTask = document.querySelector('.task-item');
+        if (firstTask) {
+            firstTask.click();
+        }
+    </script>
+</body>
+</html>

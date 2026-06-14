@@ -1,0 +1,463 @@
+{% extends 'base.html' %}
+
+{% block title %}Личный кабинет | Uleeyy{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-grid">
+        <!-- ЛЕВАЯ КОЛОНКА: Аватар и статистика -->
+        <div class="profile-sidebar">
+            <div class="avatar-section">
+                <div class="avatar">
+                    👤
+                </div>
+                <h2>{{ user.username }}</h2>
+                <p class="email">{{ user.email }}</p>
+                <div class="join-date">Присоединился {{ user.date_joined|date:"d.m.Y" }}</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{{ total_completed }}</div>
+                    <div class="stat-label">уроков пройдено</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ progress_percentage }}%</div>
+                    <div class="stat-label">общий прогресс</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ test_results|length }}</div>
+                    <div class="stat-label">тестов пройдено</div>
+                </div>
+            </div>
+
+            <div class="info-block">
+                <h3>📌 О себе</h3>
+                <p>Студент платформы Uleeyy. Изучаю программирование и современные IT-технологии.</p>
+            </div>
+
+            <div class="info-block">
+                <h3>🔗 Контакты</h3>
+                <p>Email: {{ user.email }}</p>
+                {% if user.username == "admin" %}
+                <p>tg: @uleeyy_admin</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА: Прогресс и активность -->
+        <div class="profile-main">
+            <!-- Прогресс по курсам -->
+            <div class="card">
+                <div class="card-header">
+                    <span>📊 Прогресс по курсам</span>
+                </div>
+                <div class="card-body">
+                    {% for cp in course_progress %}
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="course-name">{{ cp.course.title }}</span>
+                            <span class="course-stats">{{ cp.completed }}/{{ cp.total }} уроков</span>
+                        </div>
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-fill" style="width: {{ cp.percentage }}%;"></div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">Нет курсов</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Общий прогресс -->
+            <div class="card">
+                <div class="card-header">
+                    <span>🎯 Общий прогресс обучения</span>
+                </div>
+                <div class="card-body text-center">
+                    <div class="big-progress">
+                        <div class="big-progress-circle">
+                            <span class="big-progress-value">{{ progress_percentage }}%</span>
+                        </div>
+                    </div>
+                    <p class="progress-text">Пройдено {{ total_completed }} из {{ total_lessons }} уроков</p>
+                </div>
+            </div>
+
+            <!-- Последние пройденные уроки -->
+            <div class="card">
+                <div class="card-header">
+                    <span>✅ Недавно пройденные уроки</span>
+                </div>
+                <div class="card-body">
+                    <ul class="lessons-list">
+                        {% for progress in recent_lessons %}
+                        <li>
+                            <span class="lesson-icon">📘</span>
+                            <span class="lesson-name">{{ progress.lesson.title }}</span>
+                            <span class="lesson-date">{{ progress.completed_at|date:"d.m.Y H:i" }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="text-muted">Пока нет пройденных уроков</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Результаты тестов -->
+            <div class="card">
+                <div class="card-header">
+                    <span>📝 Результаты тестов</span>
+                </div>
+                <div class="card-body">
+                    <div class="tests-grid">
+                        {% for result in test_results %}
+                        <div class="test-card {% if result.passed %}test-passed{% else %}test-failed{% endif %}">
+                            <div class="test-name">{{ result.test.lesson.title }}</div>
+                            <div class="test-score">{{ result.percentage }}%</div>
+                            <div class="test-status">
+                                {% if result.passed %}
+                                ✅ Сдано
+                                {% else %}
+                                ❌ Не сдано
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">Пока нет пройденных тестов</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="action-buttons">
+                <a href="/" class="btn-home">🏠 На главную</a>
+                <a href="{% url 'accounts:setup_2fa' %}" class="btn-2fa">🔐 Настроить 2FA</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 2rem;
+    }
+
+    /* ЛЕВАЯ КОЛОНКА */
+    .profile-sidebar {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid #E5E7EB;
+    }
+
+    .avatar-section {
+        text-align: center;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #E5E7EB;
+    }
+
+    .avatar {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #082567, #102FA1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        margin: 0 auto 1rem;
+        color: white;
+    }
+
+    .avatar-section h2 {
+        font-size: 1.5rem;
+        color: #082567;
+        margin-bottom: 0.25rem;
+    }
+
+    .email {
+        color: #6B7280;
+        font-size: 0.85rem;
+    }
+
+    .join-date {
+        color: #9CA3AF;
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid #E5E7EB;
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 0.75rem;
+        background: #F9FAFB;
+        border-radius: 12px;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #082567;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        color: #6B7280;
+    }
+
+    .info-block {
+        padding: 1rem 0;
+        border-bottom: 1px solid #E5E7EB;
+    }
+
+    .info-block h3 {
+        font-size: 0.9rem;
+        color: #082567;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-block p {
+        font-size: 0.85rem;
+        color: #6B7280;
+    }
+
+    /* ПРАВАЯ КОЛОНКА */
+    .profile-main {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid #E5E7EB;
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1rem 1.5rem;
+        background: #F9FAFB;
+        border-bottom: 1px solid #E5E7EB;
+        font-weight: 600;
+        color: #082567;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .progress-item {
+        margin-bottom: 1.25rem;
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .course-name {
+        font-weight: 500;
+        color: #1F2937;
+    }
+
+    .course-stats {
+        color: #6B7280;
+    }
+
+    .progress-bar-wrapper {
+        background: #E5E7EB;
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        background: linear-gradient(90deg, #082567, #2563EB);
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+
+    .big-progress {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .big-progress-circle {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, #082567, #102FA1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .big-progress-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .progress-text {
+        text-align: center;
+        color: #6B7280;
+        font-size: 0.85rem;
+    }
+
+    .lessons-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .lessons-list li {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #F3F4F6;
+    }
+
+    .lesson-icon {
+        font-size: 1.2rem;
+    }
+
+    .lesson-name {
+        flex: 1;
+        font-size: 0.9rem;
+        color: #1F2937;
+    }
+
+    .lesson-date {
+        font-size: 0.7rem;
+        color: #9CA3AF;
+    }
+
+    .tests-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .test-card {
+        padding: 1rem;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .test-passed {
+        background: #DCFCE7;
+        border: 1px solid #BBF7D0;
+    }
+
+    .test-failed {
+        background: #FEE2E2;
+        border: 1px solid #FECACA;
+    }
+
+    .test-name {
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .test-score {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .test-passed .test-score {
+        color: #15803D;
+    }
+
+    .test-failed .test-score {
+        color: #B91C1C;
+    }
+
+    .test-status {
+        font-size: 0.7rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+
+    .btn-home {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: #F3F4F6;
+        color: #1F2937;
+        text-decoration: none;
+        border-radius: 40px;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid #E5E7EB;
+    }
+
+    .btn-home:hover {
+        background: #2563EB;
+        color: white;
+        border-color: #2563EB;
+    }
+
+    .btn-2fa {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: #F59E0B;
+        color: white;
+        text-decoration: none;
+        border-radius: 40px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn-2fa:hover {
+        background: #D97706;
+    }
+
+    .text-muted {
+        color: #9CA3AF;
+    }
+
+    @media (max-width: 768px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .profile-container {
+            padding: 1rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+</style>
+{% endblock %}

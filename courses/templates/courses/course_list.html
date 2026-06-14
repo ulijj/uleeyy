@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Uleeyy | Образовательная платформа IT-обучения{% endblock %}
+
+{% block content %}
+
+<!-- Главный баннер -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1>Создай свое <span>IT-будущее</span> с Uleeyy</h1>
+            <p>Образовательная платформа, которая превращает новичков в уверенных IT-специалистов через практику, проекты и профессиональную поддержку.</p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">5+</div>
+                    <div class="stat-label">Дисциплин</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3+</div>
+                    <div class="stat-label">Языков</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Практик</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-visual">
+            <div class="code-preview">
+                <div class="preview-header">
+                    <div class="preview-title">Интерактивная среда</div>
+                    <div class="tab-group">
+                        <button class="tab">Python</button>
+                        <button class="tab">Java</button>
+                    </div>
+                </div>
+                <div class="code-block" id="code-display">
+                    <span class="code-comment">// Пример кода на Java</span><br>
+                    <span class="code-keyword">public class</span> <span class="code-function">HelloWorld</span> {<br>
+                    &nbsp;&nbsp;<span class="code-keyword">public static void</span> <span class="code-function">main</span>(String[] args) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="code-string">"Добро пожаловать в Uleeyy"</span>);<br>
+                    &nbsp;&nbsp;}<br>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Наши курсы -->
+<section class="languages-section">
+    <div class="section-header">
+        <h2>Наши курсы</h2>
+        <p>Выберите курс для обучения с нуля до хорошего уровня</p>
+    </div>
+    
+    <div class="languages-grid">
+        {% for course in courses %}
+        <a href="/{{ course.id }}/" class="language-card">
+            <div class="language-icon" style="background: linear-gradient(135deg, #082567, #102FA1);">
+                {% if "python" in course.title|lower %}
+                    <i class="fab fa-python"></i>
+                {% elif "sql" in course.title|lower %}
+                    <i class="fas fa-database"></i>
+                {% elif "git" in course.title|lower or "github" in course.title|lower %}
+                    <i class="fab fa-github"></i>
+                {% elif "linux" in course.title|lower %}
+                    <i class="fab fa-linux"></i>
+                {% elif "java" in course.title|lower %}
+                    <i class="fab fa-java"></i>
+                {% elif "javascript" in course.title|lower or "js" in course.title|lower %}
+                    <i class="fab fa-js"></i>
+                {% elif "html" in course.title|lower or "css" in course.title|lower %}
+                    <i class="fab fa-html5"></i>
+                {% else %}
+                    <i class="fas fa-code"></i>
+                {% endif %}
+            </div>
+            <h3 class="language-name">{{ course.title }}</h3>
+            <p class="language-description">{{ course.description|truncatewords:10 }}</p>
+            <div class="language-features">
+                <span class="feature-tag">{{ course.modules.count }} модулей</span>
+            </div>
+        </a>
+        {% empty %}
+        <p>Пока нет курсов. Добавьте их в админке.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const tabs = document.querySelectorAll('.tab');
+    const codeDisplay = document.getElementById('code-display');
+    
+    if (tabs.length && codeDisplay) {
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const language = this.textContent;
+                
+                codeDisplay.style.opacity = '0.5';
+                setTimeout(() => {
+                    if (language === 'Java') {
+                        codeDisplay.innerHTML = `
+                            <span class="code-comment">// Пример кода на Java</span><br>
+                            <span class="code-keyword">public class</span> <span class="code-function">HelloWorld</span> {<br>
+                            &nbsp;&nbsp;<span class="code-keyword">public static void</span> <span class="code-function">main</span>(String[] args) {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="code-string">"Добро пожаловать в Uleeyy"</span>);<br>
+                            &nbsp;&nbsp;}<br>
+                            }
+                        `;
+                    } else if (language === 'C#') {
+                        codeDisplay.innerHTML = `
+                            <span class="code-comment">// Пример кода на C#</span><br>
+                            <span class="code-keyword">using</span> System;<br><br>
+                            <span class="code-keyword">class</span> <span class="code-function">Program</span> {<br>
+                            &nbsp;&nbsp;<span class="code-keyword">static void</span> <span class="code-function">Main</span>() {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;Console.WriteLine(<span class="code-string">"Освой C# с нами"</span>);<br>
+                            &nbsp;&nbsp;}<br>
+                            }
+                        `;
+                    } else if (language === 'Python') {
+                        codeDisplay.innerHTML = `
+                            <span class="code-comment"># Пример кода на Python</span><br>
+                            <span class="code-keyword">def</span> <span class="code-function">main</span>():<br>
+                            &nbsp;&nbsp;print(<span class="code-string">"Python для всех"</span>)<br><br>
+                            <span class="code-keyword">if</span> __name__ == <span class="code-string">"__main__"</span>:<br>
+                            &nbsp;&nbsp;main()
+                        `;
+                    }
+                    codeDisplay.style.opacity = '1';
+                }, 150);
+            });
+        });
+    }
+</script>
+{% endblock %}

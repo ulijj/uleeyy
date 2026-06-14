@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 500px;">
+    <h2 class="text-center mb-4">Настройка двухфакторной аутентификации</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <p>1. Установите приложение Google Authenticator на ваш телефон.</p>
+            <p>2. Отсканируйте QR-код:</p>
+            <div class="text-center mb-3">
+                <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code">
+            </div>
+            <p>3. Введите код из приложения:</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="otp_code" class="form-control mb-3" placeholder="Код подтверждения" required>
+                <button type="submit" class="btn btn-primary w-100">Подтвердить</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

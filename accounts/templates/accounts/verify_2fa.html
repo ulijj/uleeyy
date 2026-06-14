@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 400px;">
+    <h2 class="text-center mb-4">Введите код 2FA</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <p>Откройте Google Authenticator и введите код:</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="otp_code" class="form-control mb-3" placeholder="Код" required>
+                <button type="submit" class="btn btn-primary w-100">Подтвердить</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

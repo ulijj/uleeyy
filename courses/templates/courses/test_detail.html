@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Тест: {{ lesson.title }} | Uleeyy{% endblock %}
+
+{% block content %}
+<section style="max-width: 800px; margin: 3rem auto; padding: 0 2rem;">
+    <a href="/lessons/{{ lesson.id }}/" style="color: #082567; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;">
+        <i class="fas fa-arrow-left"></i> Вернуться к уроку
+    </a>
+    
+    <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem; color: #082567;">Тест: {{ lesson.title }}</h1>
+    <p style="color: #6B7280; margin-bottom: 2rem;">Пройдите тест. Проходной балл: {{ test.passing_score }}%</p>
+    
+    <form method="POST" action="{% url 'test_submit' lesson.id %}">
+        {% csrf_token %}
+        
+        {% for question in questions %}
+        <div style="background: #F9FAFB; border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">{{ forloop.counter }}. {{ question.text }}</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                {% for answer in question.answers.all %}
+                <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: background 0.2s;">
+                    <input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}" required>
+                    <span style="font-size: 1rem;">{{ answer.text }}</span>
+                </label>
+                {% empty %}
+                <p style="color: red;">Нет вариантов ответов! Добавьте их в админке.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% empty %}
+        <p style="text-align: center;">Нет вопросов в тесте. Добавьте вопросы в админке.</p>
+        {% endfor %}
+        
+        <button type="submit" style="background: #082567; color: white; padding: 1rem 2rem; border: none; border-radius: 12px; font-size: 1rem; cursor: pointer; width: 100%;">
+            <i class="fas fa-check"></i> Отправить ответы
+        </button>
+    </form>
+</section>
+{% endblock %}
