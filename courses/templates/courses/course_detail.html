@@ -203,38 +203,6 @@
             color: #F59E0B;
         }
 
-        /* ========== ДОПОЛНИТЕЛЬНЫЕ БЛОКИ ========== */
-        .info-section {
-            margin-top: 3rem;
-            background: #F9FAFB;
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-            border: 1px solid #E5E7EB;
-        }
-
-        .info-section h3 {
-            color: #082567;
-            margin-bottom: 1rem;
-        }
-
-        .test-link {
-            display: inline-block;
-            background: linear-gradient(135deg, #082567 0%, #102FA1 100%);
-            color: white;
-            text-decoration: none;
-            padding: 0.8rem 2rem;
-            border-radius: 40px;
-            font-weight: 600;
-            margin-top: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .test-link:hover {
-            background: #F59E0B;
-            transform: translateY(-2px);
-        }
-
         /* ========== ФУТЕР ========== */
         .footer {
             margin-top: 4rem;
@@ -275,16 +243,15 @@
         <div class="header-container">
             <a href="/" class="logo">
                 <div style="background: #F59E0B; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px;">
-                🐝
+                    🐝
                 </div>
-                Uleeyy</span>
+                Uleeyy
             </a>
             <a href="/" class="back-link">← На главную</a>
         </div>
     </header>
     
     <div class="container">
-        <!-- Баннер курса (синий градиент из вашего стиля) -->
         <div class="course-banner">
             <h1>{{ course.title }} <span>🐍</span></h1>
             <p>{{ course.description }}</p>
@@ -293,20 +260,9 @@
                     <div class="stat-number">{{ modules|length }}</div>
                     <div class="stat-label">модуля</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number">
-                        {% with total=0 %}
-                            {% for module in modules %}
-                                {% with total=total|add:module.lessons.count %}
-                                {% endwith %}
-                            {% endfor %}
-                            {{ modules|length }}
-                        {% endwith %}
-                    
             </div>
         </div>
         
-        <!-- Модули и уроки — ВЕРТИКАЛЬНО (СТОЛБИКОМ) -->
         <div class="modules-list">
             {% for module in modules %}
             <div class="module-card">
@@ -335,12 +291,6 @@
                 В этом курсе пока нет модулей
             </div>
             {% endfor %}
-        </div>
-        
-        <!-- Блок с тестом (если есть) -->
-        <div class="info-section">
-            
-            <a href="#" class="test-link">Пройти тест</a>
         </div>
         
     </div>
