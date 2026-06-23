@@ -468,7 +468,7 @@
                         <span class="task-title">{{ forloop.counter }}. {{ task.title }}</span>
                         <span class="task-points">{{ task.points }} баллов</span>
                     </div>
-                    <div class="task-desc">{{ task.description|truncatewords:30|linebreaks }}</div>
+                    <div class="task-desc">{{ task.description|linebreaks }}</div>
                 </div>
                 {% endfor %}
             </div>
