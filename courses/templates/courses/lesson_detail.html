@@ -6,10 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Шрифты -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- CodeMirror для редактора -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
@@ -433,12 +431,11 @@
     </style>
 </head>
 <body>
-    <!-- Хедер с пчёлкой -->
     <header class="header">
         <div style="display: flex; align-items: center;">
             <a href="/" class="logo">
                 <div class="logo-bee">🐝</div>
-                Uleeyy</>
+                Uleeyy
             </a>
             <span class="course-title">{{ lesson.module.course.title }}</span>
         </div>
@@ -446,7 +443,6 @@
     </header>
     
     <div class="main-container">
-        <!-- ЛЕВАЯ ПАНЕЛЬ: теория + задания -->
         <div class="left-panel">
             <div class="lesson-nav">
                 {% if previous_lesson %}
@@ -485,7 +481,6 @@
             {% endif %}
         </div>
         
-        <!-- ПРАВАЯ ПАНЕЛЬ: редактор кода -->
         <div class="right-panel">
             <div class="editor-header">
                 <span>🐍 Редактор кода</span>
@@ -507,7 +502,6 @@
             </div>
             
             <div class="button-bar">
-                <button class="btn-run" id="run-code-btn">▶ Запустить код</button>
                 <button class="btn-check" id="check-task-btn">✓ Проверить задание</button>
                 <button class="reset-btn" id="reset-code-btn" title="Сбросить код">↺</button>
             </div>
@@ -573,30 +567,6 @@
                 outputDiv.classList.remove('error');
             }
         }
-        
-        document.getElementById('run-code-btn').addEventListener('click', async function() {
-            const code = editor.getValue();
-            if (!code.trim()) {
-                showOutput('⚠️ Введите код для выполнения', true);
-                return;
-            }
-            showOutput('⏳ Выполнение...');
-            try {
-                const response = await fetch('{% url "run_code" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: `code=${encodeURIComponent(code)}`
-                });
-                const data = await response.json();
-                const isError = data.output.includes('❌') || data.output.includes('Error') || data.output.includes('Traceback');
-                showOutput(data.output, isError);
-            } catch (error) {
-                showOutput(`Ошибка: ${error.message}`, true);
-            }
-        });
         
         document.getElementById('check-task-btn').addEventListener('click', async function() {
             if (!currentTaskId) {
