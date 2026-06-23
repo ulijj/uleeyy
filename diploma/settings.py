@@ -63,10 +63,10 @@ WSGI_APPLICATION = "diploma.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "db-diplom",
-        "USER": "uleeyy-admin",
+        "NAME": "uleeyy",
+        "USER": "postgres",
         "PASSWORD": "admin",
-        "HOST": "amvera-uleyy-cnpg-db-ulleyy-rw",
+        "HOST": "127.0.0.1",
         "PORT": "5432",
     }
 }
